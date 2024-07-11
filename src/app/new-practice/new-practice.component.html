@@ -1,0 +1,26 @@
+  <mat-form-field>
+      <input matInput placeholder="Search" (input)="filterChanged($event.target)">
+    </mat-form-field>
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <!-- Node template for leaf nodes (no children) -->
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+        <button mat-icon-button disabled></button>
+        <ng-container *ngIf="!hasChild(0, node)">
+          <mat-checkbox class="checklist-leaf-node" [checked]="checklistSelection.isSelected(node)"
+                        (change)="onCheckboxChange($event, node)">
+            {{node.item}}
+          </mat-checkbox>
+        </ng-container>
+      </mat-tree-node>
+    
+      <!-- Node template for parent nodes (with children) -->
+      <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+        <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.item">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
+        <div>{{node.item}}</div>
+      </mat-tree-node>
+    </mat-tree>
+    

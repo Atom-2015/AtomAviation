@@ -1,0 +1,34 @@
+<div class="popup-container">
+  <div class="popup-header">
+    <h2><strong>Select State And City</strong></h2>
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+      <button mat-icon-button disabled></button>
+      <mat-checkbox class="checklist-leaf-node" [checked]="checklistSelection.isSelected(node)"
+                    (change)="onCheckboxChange($event, node)">
+        {{node.name}}
+      </mat-checkbox>
+    </mat-tree-node>
+
+    <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+      <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
+        <mat-icon class="mat-icon-rtl-mirror">
+          {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        </mat-icon>
+      </button>
+      <mat-checkbox [checked]="checklistSelection.isSelected(node)"
+                    (change)="onCheckboxChange($event, node)">
+        {{node.name}}
+      </mat-checkbox>
+    </mat-tree-node>
+  </mat-tree>
+
+  <div class="button-container">
+    <button mat-raised-button (click)="getCheckedNodes()">Submit</button>
+  </div>
+</div>

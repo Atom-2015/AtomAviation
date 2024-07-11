@@ -1,0 +1,56 @@
+<app-header></app-header>
+<div style="display: flex; justify-content: center;margin-top: 60px;">
+  <h2><strong> User's List </strong></h2>
+</div>
+<div class="example-container mat-elevation-z8">
+  <mat-table #table [dataSource]="dataSource">
+
+    <!-- Serial Number Column -->
+    <ng-container matColumnDef="serialNo">
+      <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+      <mat-cell *matCellDef="let element; let i = index"> {{i + 1}} </mat-cell>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+    </ng-container>
+
+    <!-- Email Column -->
+    <ng-container matColumnDef="email">
+      <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.email}} </mat-cell>
+    </ng-container>
+
+    <!-- Cities Column -->
+    <ng-container matColumnDef="cities">
+      <mat-header-cell *matHeaderCellDef> Cities </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.cities.join(', ')}} </mat-cell>
+    </ng-container>
+
+    <!-- User Type Column -->
+    <ng-container matColumnDef="user_type">
+      <mat-header-cell *matHeaderCellDef> User Type (Admin)</mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <mat-slide-toggle [checked]="element.user_type === 'admin'" (change)="enableAdmin($event, element)"></mat-slide-toggle>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Action Column -->
+    <ng-container matColumnDef="action">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Action </mat-header-cell>
+      <mat-cell *matCellDef="let row" [style.color]="row.color">
+        <span style="color: #4b8dce;font-weight: 600;margin: 0 2px;cursor: pointer;" (click)="edit(row)">
+          <mat-icon>edit</mat-icon>
+        </span>
+        <span style="color: #e51d1d;font-weight: 600;margin: 0 2px;cursor: pointer;" (click)="remove(row)">
+          <mat-icon>delete</mat-icon>
+        </span>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div>

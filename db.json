@@ -1,0 +1,102 @@
+{
+  "states": [
+    {
+      "id": "bb58",
+      "state": "Andhra Pradesh",
+      "cities": [
+        {
+          "name": "Visakhapatnam",
+          "files": [
+            {
+              "tableName": "flying_area_in_himanchal_i8eyp92u5wrgdokjtyvi6e",
+              "file": "Hello1"
+            },
+            {
+              "tableName": "flying_area_in_himanchal_i8eyp92u5wrgdokjtyvi6e",
+              "file": "Hello2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b8eb",
+      "state": "Arunachal Pradesh",
+      "cities": [
+        {
+          "name": "Itanagar",
+          "files": [
+            {
+              "tableName": "flying_area_in_himanchal_cexgqid5kkb5j5duxmxnqc",
+              "file": "Hello"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "user": [
+    {
+      "id": "0a96",
+      "name": "Laxman",
+      "userType": "user",
+      "email": "osnagarnigam@rediffmail.com",
+      "cities": [
+        "Visakhapatnam",
+        "Guntur",
+        "Vijayawada",
+        "Kurnool"
+      ],
+      "permission": [
+        {
+          "state": "Andhra Pradesh",
+          "cities": [
+            "Vijayawada",
+            "Kurnool"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "009b",
+      "name": "lksdkfd",
+      "userType": "user",
+      "email": "1998laxmanrathod@gmail.com",
+      "cities": [],
+      "permission": [
+        {
+          "state": "Andhra Pradesh",
+          "cities": [
+            "Visakhapatnam",
+            "Guntur",
+            "Vijayawada",
+            "Kurnool"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a74d",
+      "name": "Laxman",
+      "email": "osnagarnigam@rediffmail.com",
+      "password": "Heliware@123",
+      "permission": [
+        {
+          "state": "Arunachal Pradesh",
+          "cities": [
+            "Itanagar"
+          ]
+        },
+        {
+          "state": "Andhra Pradesh",
+          "cities": [
+            "Visakhapatnam",
+            "Guntur",
+            "Vijayawada",
+            "Kurnool"
+          ]
+        }
+      ]
+    }
+  ]
+}

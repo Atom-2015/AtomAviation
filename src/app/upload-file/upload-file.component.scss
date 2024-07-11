@@ -1,0 +1,122 @@
+.form-container {
+  position: relative;
+  padding: 20px;
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.select-section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.select-container {
+  display: flex;
+  flex-direction: column;
+  width: 48%;
+}
+
+.select-container h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.select-field {
+  width: 100%;
+}
+
+.input-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.input-field {
+  width: 45%;
+}
+
+.file-upload-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45%;
+  margin-block-end: auto;
+}
+
+.file-upload-button {
+  width: 130px;
+  height: 45px;
+  margin-right: 10px;
+}
+
+.file-name {
+  display: inline-block;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.button-section {
+  display: flex;
+  justify-content: space-between;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 2;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.table th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+/* Select input fields within the table */
+.table input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  border: none; /* Remove border */
+  border-radius: 4px;
+  outline: none; /* Remove outline when focused */
+}
+
+.button-section {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.button-section button {
+  margin-left: 10px;
+}

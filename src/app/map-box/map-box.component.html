@@ -1,0 +1,46 @@
+<app-header></app-header>
+<div style="display: flex;flex-direction: row;">
+  <div id="map"></div>
+  <div style="position: absolute;left: 5px;bottom: 25px;" *ngIf="userType === 'super_admin' || userType === 'admin'">
+    <button style="width: 200px;height: 35px; border-radius: 20px; background-color: #9696a4;color: white;" type="button" class="btn btn-info" (click)="openPopup()">Upload</button>
+  </div>
+</div>
+
+<div style="margin-top: 50px;">
+  <mat-form-field style="width: 13.8%;">
+    <input matInput placeholder="search KML" (input)="filterChanged($event)">
+  </mat-form-field>
+  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+    <!-- Node template for leaf nodes (no children) -->
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding matTreeNodePaddingIndent="1">
+      <button mat-icon-button disabled></button>
+      <ng-container *ngIf="!hasChild(0, node)">
+        <mat-checkbox class="checklist-leaf-node" [checked]="checklistSelection.isSelected(node)"
+          (change)="onCheckboxChange($event, node)">
+          {{node.item}}
+        </mat-checkbox>
+      </ng-container>
+    </mat-tree-node>
+
+    <!-- Node template for parent nodes (with children) -->
+    <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding matTreeNodePaddingIndent="10">
+      <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.item">
+        <mat-icon class="mat-icon-rtl-mirror">
+          {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        </mat-icon>
+      </button>
+      <div>{{node.item}}</div>
+    </mat-tree-node>
+  </mat-tree>
+</div>
+<div id="custom-geocoder" class="mapboxgl-ctrl mapboxgl-ctrl-group"></div>
+<div id="popup" class="popup" style="display:none;">
+  <!-- Popup content -->
+  <button id="cancel-icon" mat-icon-button>
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div *ngIf="loading" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background: rgba(255, 255, 255, 0.7); z-index: 2;">
+  <mat-spinner diameter="50" strokeWidth="5"></mat-spinner>
+</div>

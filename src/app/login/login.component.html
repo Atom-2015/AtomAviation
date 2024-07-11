@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="left-panel">
+    <div class="login-box">
+      <h2>Login</h2>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="input-group">
+          <input type="text" id="email" formControlName="email" required>
+          <label for="email">Email</label>
+          <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error">
+            <small *ngIf="loginForm.get('email')?.errors?.['required']">Email is required.</small>
+            <small *ngIf="loginForm.get('email')?.errors?.['email']">Enter a valid email.</small>
+          </div>
+        </div>
+        <div class="input-group">
+          <input type="password" id="password" formControlName="password" required>
+          <label for="password">Password</label>
+          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error">
+            <small *ngIf="loginForm.get('password')?.errors?.['required']">Password is required.</small>
+            <small *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters
+              long.</small>
+          </div>
+        </div>
+        <a href="#" class="forgot-password">Forgot Password?</a>
+        <button type="submit" [disabled]="loginForm.invalid">Login</button>
+        <p class="signup-link">Don't have an account? <a routerLink="/sign-up">Signup now</a></p>
+      </form>
+    </div>
+  </div>
+  <div class="right-panel">
+    <img src="../../assets/world-map.jpg" alt="Img ..." class="illustration">
+  </div>
+</div>

@@ -1,0 +1,55 @@
+<div class="form-container">
+  <form [formGroup]="form" class="form-content" (ngSubmit)="onSubmit()" >
+    <div class="input-section">
+      <div class="file-upload-container">
+        <button type="button" mat-raised-button (click)="file.click()" class="file-upload-button">Choose File</button>
+        <input hidden type="file" (change)="uploadFile($event)" #file>
+        <!-- <span class="file-name">{{file?.files[0]?.name}}</span> -->
+      </div>      
+        <mat-form-field appearance="fill" class="input-field">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" [disabled]="fileNotUploaded" placeholder="Name">
+        </mat-form-field>      
+    </div>
+    <div class="select-section">
+      <div class="select-container">
+        <h2>Select State</h2>
+        <mat-form-field appearance="fill" class="select-field">
+          <mat-label>Select state</mat-label>
+          <mat-select formControlName="state" (selectionChange)="getState($event)">
+            <mat-option *ngFor="let i of states" [value]="i">{{i.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+            
+      <div class="select-container">
+        <h2>Select City</h2>
+        <mat-form-field appearance="fill" class="select-field">
+          <mat-label>Select city</mat-label>
+          <mat-select formControlName="city" (selectionChange)="getCity($event)">
+            <mat-option *ngFor="let i of city" [value]="i">{{i}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <table class="table" formArrayName="tableRows">
+      <tr>
+        <th>Header 1</th>
+        <th>Header 2</th>
+      </tr>
+      <tr *ngFor="let row of tableRows.controls; let i = index" [formGroupName]="i">
+        <td><input type="text" formControlName="column1" placeholder="Row {{i + 1}}, Column 1"></td>
+        <td><input type="text" formControlName="column2" placeholder="Row {{i + 1}}, Column 2"></td>
+      </tr>
+    </table>
+    <div class="button-section">
+      <button type="button" mat-flat-button color="warn" mat-dialog-close>Cancel</button>
+      <button type="submit" mat-flat-button color="primary">Submit</button>
+    </div>
+  </form>
+
+  <!-- Overlay for spinner -->
+  <div *ngIf="loading" class="overlay">
+    <mat-spinner diameter="50" strokeWidth="5"></mat-spinner>
+  </div>
+</div>
