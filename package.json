@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build:digitalocean": "npm install --production=false && npm run build && npm ci",
+    "build":"ng build --prod && mv dist/agular-aviation _static",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
