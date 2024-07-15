@@ -403,6 +403,6 @@ export class MapBoxComponent implements OnInit {
 
   postData(form: any) {
     console.log("form =============", form)
-    return this.http.post<any>(`http://127.0.0.1:8000/api/upload_file_postgres/`, form);
+    return this.http.post<any>(`http://68.183.88.169/api/upload_file_postgres/`, form);
   }
 }

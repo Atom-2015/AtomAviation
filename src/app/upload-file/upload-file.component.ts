@@ -147,11 +147,6 @@ export class UploadFileComponent implements OnInit{
       tableRows: this.fb.array(this.initTableRows())
     })
   }
-  getStateData() {
-    this.stateService.getStates().subscribe(states => {
-      console.log("states ==============",states)
-    });
-  }
 
   initTableRows(): FormGroup[] {
     return Array(6).fill(null).map(() => this.fb.group({
@@ -204,7 +199,7 @@ export class UploadFileComponent implements OnInit{
   }
   
   postData(form:any){
-    return   this.http.post<any>(`http://127.0.0.1:8000/api/kml_postgres/`, form);
+    return   this.http.post<any>(`http://68.183.88.169/api/kml_postgres/`, form);
   }
 
   selectedValue!: string;

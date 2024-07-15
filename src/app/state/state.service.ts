@@ -30,40 +30,10 @@ export interface FileNode {
   providedIn: 'root'
 })
 export class  StateService {
-  private apiUrl = 'http://localhost:3000/states';
-  private apiUserUrl = 'http://localhost:3000/user';
+  private apiUrl = 'http://68.183.88.169/api';
+  // private apiUserUrl = 'http://localhost:3000/user';
 
   constructor(private http: HttpClient) { }
-
-  getStates(): Observable<StateNode[]> {
-    return this.http.get<StateNode[]>(this.apiUrl);
-  }
-
-  getUser(): Observable<User[]> {
-    return this.http.get<User[]>(this.apiUserUrl);
-  }
-
-  addState(state:any): Observable<any> {
-    console.log(state)
-    return this.http.post<any>(this.apiUrl, state);
-  }
-
-  adUser(user:any): Observable<any> {
-    console.log(user)
-    return this.http.post<any>(this.apiUserUrl, user);
-  }
-
-  updateState(id: number, state: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, state);
-  }
-
-  updatePermission(id: string, updatedData: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUserUrl}/${id}`, updatedData);
-  }
-
-  getUserByEmail(email: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUserUrl}?email=${email}`);
-  }
 
   signUpAPI(data:any){
     let form = new FormData() 
@@ -72,7 +42,7 @@ export class  StateService {
     form.append("mail", data.email)
     form.append("password", data.password)
 
-    return this.http.post<any>(`http://127.0.0.1:8000/api/sign_up/`, form);
+    return this.http.post<any>(`${this.apiUrl}/sign_up/`, form);
   }
 
   signInAPI(data:any){
@@ -80,7 +50,7 @@ export class  StateService {
     form.append("dbpwd", "1234")
     form.append("mail", data.email)
     form.append("password", data.password)
-    return this.http.post<any>(`http://127.0.0.1:8000/api/sign_in/`, form);
+    return this.http.post<any>(`${this.apiUrl}/sign_in/`, form);
   }
 
   fetchStateAPI(){
@@ -88,7 +58,7 @@ export class  StateService {
     form.append("dbpwd", "1234")
     const username:any = localStorage.getItem("username")
     form.append("mail", username)
-    return this.http.post<any>(`http://127.0.0.1:8000/api/user_data_with_permission/`, form);
+    return this.http.post<any>(`${this.apiUrl}/user_data_with_permission/`, form);
   }
 
   fetchUsers(){
@@ -96,14 +66,14 @@ export class  StateService {
     form.append("dbpwd", "1234")
     const username:any = localStorage.getItem("username")
     form.append("mail", username)
-    return this.http.post<any>(`http://127.0.0.1:8000/api/fetch_users_table/`, form);
+    return this.http.post<any>(`${this.apiUrl}/fetch_users_table/`, form);
 }
 
   fetchGeoJsonData(value:any){
     let form = new FormData() 
     form.append("dbpwd", "1234")
     form.append("input_tablename", value)
-    return this.http.post<any>(`http://127.0.0.1:8000/api/postgres_to_geo/`, form);
+    return this.http.post<any>(`${this.apiUrl}/postgres_to_geo/`, form);
   }
 
   setAdminPermission(value:any, email:any){
@@ -113,7 +83,7 @@ export class  StateService {
     form.append("mail", email)
     const permission = value === "admin" ? "wrd" : "wr"
     form.append("permission", permission)
-    return this.http.post<any>(`http://127.0.0.1:8000/api/admin_user_per/`, form);  
+    return this.http.post<any>(`${this.apiUrl}/admin_user_per/`, form);  
   }
 
   shareDataWithUser(checkedData:any, userValues:any){
@@ -127,6 +97,6 @@ export class  StateService {
     // form.append("city", checkedData.cities)
     const permission = userValues.user.user_type === "admin" ? "wrd" : "wr"
     form.append("permission", permission)
-    return this.http.post<any>(`http://127.0.0.1:8000/api/share_data_with_permission/`,form);  
+    return this.http.post<any>(`${this.apiUrl}/share_data_with_permission/`,form);  
   }
 }

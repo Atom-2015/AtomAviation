@@ -25,19 +25,6 @@ export class UserComponent implements OnInit{
   checked = true
   users: any
   ngOnInit(): void {
-    // this.stateService.getUser().subscribe((res)=>{
-    //   console.log("res===================",res)
-    //   this.users = res;
-    //   // this.extractCities(res.permission);
-    //   // this.dataSource = new MatTableDataSource(res)
-    //   this.dataSource.data = res.map(user => ({
-    //     id: user.id,
-    //     name: user.name,
-    //     email: user.email,
-    //     cities: user.permission.flatMap((permission:any) => permission.cities),
-    //     user_type: user?.userType ? user.userType : "user"  
-    //   }));
-    // })
     this.fetUserData() 
   }
 
@@ -45,8 +32,6 @@ export class UserComponent implements OnInit{
     this.stateService.fetchUsers().subscribe((resp:any)=>{
       console.log("res===================",resp.data)
       this.users = resp.data;
-      // this.extractCities(res.permission);
-      // this.dataSource = new MatTableDataSource(res)
       this.dataSource.data = resp.data.map((user:any) => ({
         id: user.id,
         name: user.name,
