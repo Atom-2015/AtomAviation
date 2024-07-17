@@ -199,7 +199,7 @@ export class UploadFileComponent implements OnInit{
   }
   
   postData(form:any){
-    return   this.http.post<any>(`http://68.183.88.169/api/kml_postgres/`, form);
+    return   this.http.post<any>(`https://futurelandplans.com/api/kml_postgres/`, form);
   }
 
   selectedValue!: string;
