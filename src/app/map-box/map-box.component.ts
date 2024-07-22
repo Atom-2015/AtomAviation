@@ -42,9 +42,9 @@ export class ChecklistDatabaseMap {
   }
 
   buildFileTree(obj: any, level: string): TreeItemNode[] {
-    if (level.split('.').length > 3) {
+    if (level.split('.').length > 3 || obj === null) {
       return [];
-    }
+    } else {
     return Object.keys(obj).map(key => {
       const node = new TreeItemNode();
       node.item = key;
@@ -55,6 +55,7 @@ export class ChecklistDatabaseMap {
       }
       return node;
     });
+  }
   }
 
   filter(filterText: string) {

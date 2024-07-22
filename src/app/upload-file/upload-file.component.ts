@@ -17,129 +17,14 @@ export class UploadFileComponent implements OnInit{
     public dialogRef: MatDialogRef<UploadFileComponent>
   ){}
 
-    states = [
-      {
-        "name": "Andhra Pradesh",
-        "cities": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool"]
-      },
-      {
-        "name": "Arunachal Pradesh",
-        "cities": ["Itanagar"]
-      },
-      {
-        "name": "Assam",
-        "cities": ["Guwahati", "Dispur", "Silchar", "Dibrugarh"]
-      },
-      {
-        "name": "Bihar",
-        "cities": ["Patna", "Gaya", "Bhagalpur"]
-      },
-      {
-        "name": "Chhattisgarh",
-        "cities": ["Raipur", "Bhilai", "Korba"]
-      },
-      {
-        "name": "Goa",
-        "cities": ["Panaji", "Margao"]
-      },
-      {
-        "name": "Gujarat",
-        "cities": ["Ahmedabad", "Surat", "Vadodara", "Rajkot"]
-      },
-      {
-        "name": "Haryana",
-        "cities": ["Chandigarh", "Gurgaon", "Faridabad"]
-      },
-      {
-        "name": "Himachal Pradesh",
-        "cities": ["Shimla", "Dharamshala"]
-      },
-      {
-        "name": "Jharkhand",
-        "cities": ["Ranchi", "Jamshedpur", "Dhanbad"]
-      },
-      {
-        "name": "Karnataka",
-        "cities": ["Bangalore", "Mysore", "Hubli", "Mangalore"]
-      },
-      {
-        "name": "Kerala",
-        "cities": ["Thiruvananthapuram", "Kochi", "Kozhikode"]
-      },
-      {
-        "name": "Madhya Pradesh",
-        "cities": ["Bhopal", "Indore", "Gwalior", "Jabalpur"]
-      },
-      {
-        "name": "Maharashtra",
-        "cities": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad"]
-      },
-      {
-        "name": "Manipur",
-        "cities": ["Imphal"]
-      },
-      {
-        "name": "Meghalaya",
-        "cities": ["Shillong"]
-      },
-      {
-        "name": "Mizoram",
-        "cities": ["Aizawl"]
-      },
-      {
-        "name": "Nagaland",
-        "cities": ["Kohima", "Dimapur"]
-      },
-      {
-        "name": "Odisha",
-        "cities": ["Bhubaneswar", "Cuttack", "Rourkela"]
-      },
-      {
-        "name": "Punjab",
-        "cities": ["Chandigarh", "Amritsar", "Ludhiana", "Patiala"]
-      },
-      {
-        "name": "Rajasthan",
-        "cities": ["Jaipur", "Udaipur", "Jodhpur", "Kota"]
-      },
-      {
-        "name": "Sikkim",
-        "cities": ["Gangtok"]
-      },
-      {
-        "name": "Tamil Nadu",
-        "cities": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli"]
-      },
-      {
-        "name": "Telangana",
-        "cities": ["Hyderabad", "Warangal"]
-      },
-      {
-        "name": "Tripura",
-        "cities": ["Agartala"]
-      },
-      {
-        "name": "Uttar Pradesh",
-        "cities": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi"]
-      },
-      {
-        "name": "Uttarakhand",
-        "cities": ["Dehradun", "Haridwar"]
-      },
-      {
-        "name": "West Bengal",
-        "cities": ["Kolkata", "Howrah", "Durgapur", "Siliguri"]
-      }
-    
-    ]
+    states:any[] = []
     loading: boolean = false;
     city:any
     form: any;
     inputFile:any;
     fileNotUploaded = true;
   ngOnInit(): void {
-    console.log(this.states)
-
+    this.getStateData()
     this.form = this.fb.group({
       name: new FormControl({ value: null, disabled: this.fileNotUploaded }, { validators: [Validators.required] }),
       state: new FormControl({ value: null, disabled: this.fileNotUploaded }, { validators: [Validators.required] }),
@@ -153,6 +38,12 @@ export class UploadFileComponent implements OnInit{
       column1: [''],
       column2: ['']
     }));
+  }
+
+  getStateData() {
+    this.stateService.getStates().subscribe(states => {
+      this.states = states.data.states
+    });
   }
 
   get tableRows(): FormArray {
@@ -171,10 +62,8 @@ export class UploadFileComponent implements OnInit{
     // Process tableData as needed
   }
   
-
   getState(value:any){
-    console.log(value.value.cities)
-    this.city = value.value.cities
+    this.stateService.getAllStateCities(value.value.name).subscribe((resp:any)=> this.city = resp.data)
   }
 
   getCity(value:any){
