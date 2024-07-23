@@ -1,8 +1,8 @@
 <app-header></app-header>
 <div style="display: flex;flex-direction: row;">
   <div id="map"></div>
-  <div style="position: absolute;left: 5px;bottom: 25px;" *ngIf="userType === 'super_admin' || userType === 'admin'">
-    <button style="width: 200px;height: 35px; border-radius: 20px; background-color: #9696a4;color: white;" type="button" class="btn btn-info" (click)="openPopup()">Upload</button>
+  <div style="position: absolute;left: 5px;bottom: 25px; width: 100%;" *ngIf="userType === 'super_admin' || userType === 'admin'">
+    <button style="width: 13%;height: 35px; border-radius: 8px; background-color: #9696a4;color: white;" type="button" class="btn btn-info" (click)="openPopup()">Upload</button>
   </div>
 </div>
 
