@@ -23,6 +23,7 @@ export class UploadFileComponent implements OnInit{
     form: any;
     inputFile:any;
     fileNotUploaded = true;
+    fileName:string = '';
   ngOnInit(): void {
     this.getStateData()
     this.form = this.fb.group({
@@ -81,6 +82,8 @@ export class UploadFileComponent implements OnInit{
   uploadFile(e: Event): void {
     const input = e.target as HTMLInputElement;
     this.data.input = input;
+    this.fileName = this.data.input.files[0].name
+    console.log("resp.input.files[0]",this.data.input.files[0])
     this.fileNotUploaded = false
     this.form.get('name')?.enable();
     this.form.get('state')?.enable();

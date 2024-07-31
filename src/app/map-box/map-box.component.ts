@@ -11,6 +11,7 @@ import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as mapboxgl from 'mapbox-gl';
 import * as turf from '@turf/turf';
 import * as MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import {MatSnackBar} from '@angular/material/snack-bar'
 export class TreeItemNode {
   children!: TreeItemNode[];
   item!: string;
@@ -108,7 +109,7 @@ export class MapBoxComponent implements OnInit {
   dataSource: MatTreeFlatDataSource<TreeItemNode, TreeItemFlatNode>;
   checklistSelection = new SelectionModel<TreeItemFlatNode>(false);
   userType = localStorage.getItem("user_type")
-  constructor(public dialog: MatDialog, private stateService: StateService, private http: HttpClient, private database: ChecklistDatabaseMap) {
+  constructor(public dialog: MatDialog, private stateService: StateService, private http: HttpClient, private database: ChecklistDatabaseMap, private _snackBar: MatSnackBar) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<TreeItemFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
@@ -221,78 +222,82 @@ export class MapBoxComponent implements OnInit {
       // Fetch geojson data and add layers to the map
       this.stateService.fetchGeoJsonData(node.value.table_name).subscribe((resp) => {
         console.log("res===========", resp);
-        console.log("co ordinsted", resp.data.features[0].geometry.coordinates);
-
-        const coordinates =  resp.data.features[0].geometry.type === "LineString" ? resp.data.features[0].geometry.coordinates[0] :  resp.data.features[0].geometry.coordinates[0][0] ? resp.data.features[0].geometry.coordinates[0][0] : resp.data.features[0].geometry.coordinates;
-
+        console.log("co ordinates", resp.data.features[0].geometry.coordinates);
+      
+        const coordinates = resp.data.features[0].geometry.type === "LineString" ? resp.data.features[0].geometry.coordinates[0] : resp.data.features[0].geometry.coordinates[0][0] ? resp.data.features[0].geometry.coordinates[0][0] : resp.data.features[0].geometry.coordinates;
+      
         this.map.setCenter(coordinates);
-
-        // Add the source if it doesn't exist
-        if (!this.map.getSource('maine')) {
-          this.map.addSource('maine', {
-            'type': 'geojson',
-            'data': resp.data
-          });
+      
+        const sourceId = 'maine';
+        const polygonLayerId = 'polygon-layer';
+        const outlineLayerId = 'outline-layer';
+        const pointLayerId = 'point-layer';
+        const lineLayerId = 'line-layer';
+      
+        // Remove existing layers and source if they exist
+        [polygonLayerId, outlineLayerId, pointLayerId, lineLayerId].forEach(layer => {
+          if (this.map.getLayer(layer)) {
+            this.map.removeLayer(layer);
+          }
+        });
+        if (this.map.getSource(sourceId)) {
+          this.map.removeSource(sourceId);
         }
-
-        // Remove existing layers if any
-        if (this.map.getLayer('maine')) {
-          this.map.removeLayer('maine');
-        }
-        if (this.map.getLayer('outline')) {
-          this.map.removeLayer('outline');
-        }
-
+      
+        // Add the source
+        this.map.addSource(sourceId, {
+          'type': 'geojson',
+          'data': resp.data
+        });
+      
         // Add new layers based on the geometry type
         if (resp.data.features[0].geometry.type === "Polygon") {
           console.log("resp =============>>", resp);
           // Add a new layer to visualize the polygon.
           this.map.addLayer({
-            'id': 'maine',
+            'id': polygonLayerId,
             'type': 'fill',
-            'source': 'maine', // reference the data source
+            'source': sourceId, // reference the data source
             'layout': {},
             'paint': {
-              'fill-color': resp.data.features[0].properties.stroke,
+              'fill-color': `rgb(${[1, 2, 3].map(x => Math.random() * 256 | 0)})`,
               'fill-opacity': 0.5
             }
           });
           // Add a black outline around the polygon.
           this.map.addLayer({
-            'id': 'outline',
+            'id': outlineLayerId,
             'type': 'line',
-            'source': 'maine',
+            'source': sourceId,
             'layout': {},
             'paint': {
-              'line-color': '#000',
+              'line-color': `rgb(${[1, 2, 3].map(x => Math.random() * 256 | 0)})`,
               'line-width': 1
             }
           });
-        }
-        if (resp.data.features[0].geometry.type === "Point") {
+        } else if (resp.data.features[0].geometry.type === "Point") {
           this.map.addLayer({
-            'id': 'maine',
+            'id': pointLayerId,
             'type': 'circle',
-            'source': 'maine',
+            'source': sourceId,
             'paint': {
               'circle-radius': 4,
               'circle-stroke-width': 2,
-              'circle-color': 'red',
+              'circle-color': `rgb(${[1, 2, 3].map(x => Math.random() * 256 | 0)})`,
               'circle-stroke-color': 'white'
             }
           });
-        }
-        if (resp.data.features[0].geometry.type === "LineString") {
+        } else if (resp.data.features[0].geometry.type === "LineString") {
           this.map.addLayer({
-            'id': 'maine',
+            'id': lineLayerId,
             'type': 'line',
-            'source': 'maine',
+            'source': sourceId,
             'layout': {
               'line-join': 'round',
               'line-cap': 'round'
             },
             'paint': {
-              'line-color': '#BF93E4',
+              'line-color': `rgb(${[1, 2, 3].map(x => Math.random() * 256 | 0)})`,
               'line-width': 10
             }
           });
@@ -302,6 +307,7 @@ export class MapBoxComponent implements OnInit {
           });
         }
       });
+      
       const popup: any = document.getElementById('popup');
       const cancelIcon: any = document.getElementById('cancel-icon');
 
@@ -364,8 +370,8 @@ export class MapBoxComponent implements OnInit {
 
   openPopup() {
     this.dialog.open(UploadFileComponent, {
-      width: '550px',
-      height: '360px',
+      width: '50vw',
+      height: '100vh',
       panelClass: 'custom-dialog-container',
       data: {
         name: '',
@@ -393,9 +399,22 @@ export class MapBoxComponent implements OnInit {
         console.log(form)
         this.postData(form).subscribe((res: any) => {
           this.getStateData()
-
+          if(res.status === 200) {
+            this._snackBar.open("file upload success", 'Close', {
+              duration:3000
+            });
+          }
+          if(res.status === 400){
+            this._snackBar.open("file upload faild", 'Close', {
+              duration:3000
+            });
+          } 
           this.loading = false;
-        }, () => this.loading = false)
+        }, () => {
+          this._snackBar.open("file upload faild", 'Close', {
+            duration:3000
+          });
+          this.loading = false})
       } else {
         this.loading = false;
       }
