@@ -107,8 +107,9 @@ export class MapBoxComponent implements OnInit {
   treeControl: FlatTreeControl<TreeItemFlatNode>;
   treeFlattener: MatTreeFlattener<TreeItemNode, TreeItemFlatNode>;
   dataSource: MatTreeFlatDataSource<TreeItemNode, TreeItemFlatNode>;
-  checklistSelection = new SelectionModel<TreeItemFlatNode>(false);
+  checklistSelection = new SelectionModel<TreeItemFlatNode>(true);
   userType = localStorage.getItem("user_type")
+  mapbuttonName = "Toggle Satellite"
   constructor(public dialog: MatDialog, private stateService: StateService, private http: HttpClient, private database: ChecklistDatabaseMap, private _snackBar: MatSnackBar) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<TreeItemFlatNode>(this.getLevel, this.isExpandable);
@@ -163,9 +164,26 @@ export class MapBoxComponent implements OnInit {
     this.map = new mapboxgl.Map({
       container: 'map', // container ID
       attributionControl: false,
-      // style: 'mapbox://styles/mapbox/light-v11', // style URL
+      // style: 'mapbox://styles/mapbox/satellite-v9',
+      style: 'mapbox://styles/mapbox/streets-v11', // style URL
       center: [77.22445000, 28.63576000], // starting position [lng, lat]
-      zoom: 9 // starting zoom
+      zoom: 4 // starting zoom
+    });
+    this.map.on('load', () => {
+      this.map.addSource('satellite-source', {
+        type: 'raster',
+        url: 'mapbox://mapbox.satellite',
+        tileSize: 256
+      });
+
+      this.map.addLayer({
+        id: 'satellite-layer',
+        type: 'raster',
+        source: 'satellite-source',
+        paint: {}
+      });
+
+      this.map.setLayoutProperty('satellite-layer', 'visibility', 'none');
     });
     this.map.addControl(this.draw);
     this.map.on('draw.create', (event: any) => {
@@ -199,6 +217,17 @@ export class MapBoxComponent implements OnInit {
     }
   }
 
+  toggleSatelliteLayer() {
+    const visibility = this.map.getLayoutProperty('satellite-layer', 'visibility');
+    if (visibility === 'visible') {
+      this.mapbuttonName = "Toggle Satellite";
+      this.map.setLayoutProperty('satellite-layer', 'visibility', 'none');
+    } else {
+      this.mapbuttonName = "Toggle Map"
+      this.map.setLayoutProperty('satellite-layer', 'visibility', 'visible');
+    }
+  }
+
   getStateData() {
     this.stateService.fetchStateAPI().subscribe((resp: any) => {
       this.database.initialize(resp.data)
@@ -214,57 +243,43 @@ export class MapBoxComponent implements OnInit {
   onCheckboxChange(event: any, node: any): void {
     console.log('Checkbox change event: ', event);
     console.log('Node: ', node);
-    this.checklistSelection.clear(); // Clear previous selection
+    // this.checklistSelection.clear(); // Clear previous selection
     this.checklistSelection.toggle(node);
-    // Handle the checkbox change event here
-    // For example, you can update the form or state based on the checkbox state
+
     if (event.checked) {
-      // Fetch geojson data and add layers to the map
       this.stateService.fetchGeoJsonData(node.value.table_name).subscribe((resp) => {
-        console.log("res===========", resp);
-        console.log("co ordinates", resp.data.features[0].geometry.coordinates);
-      
         const coordinates = resp.data.features[0].geometry.type === "LineString" ? resp.data.features[0].geometry.coordinates[0] : resp.data.features[0].geometry.coordinates[0][0] ? resp.data.features[0].geometry.coordinates[0][0] : resp.data.features[0].geometry.coordinates;
-      
+  
         this.map.setCenter(coordinates);
-      
-        const sourceId = 'maine';
-        const polygonLayerId = 'polygon-layer';
-        const outlineLayerId = 'outline-layer';
-        const pointLayerId = 'point-layer';
-        const lineLayerId = 'line-layer';
-      
-        // Remove existing layers and source if they exist
-        [polygonLayerId, outlineLayerId, pointLayerId, lineLayerId].forEach(layer => {
-          if (this.map.getLayer(layer)) {
-            this.map.removeLayer(layer);
-          }
-        });
+  
+        const sourceId = node.value.table_name + '-source';
+        const polygonLayerId = node.value.table_name + '-polygon-layer';
+        const outlineLayerId = node.value.table_name + '-outline-layer';
+        const pointLayerId = node.value.table_name + '-point-layer';
+        const lineLayerId = node.value.table_name + '-line-layer';
+  
         if (this.map.getSource(sourceId)) {
           this.map.removeSource(sourceId);
         }
-      
+  
         // Add the source
         this.map.addSource(sourceId, {
           'type': 'geojson',
           'data': resp.data
         });
-      
+  
         // Add new layers based on the geometry type
         if (resp.data.features[0].geometry.type === "Polygon") {
-          console.log("resp =============>>", resp);
-          // Add a new layer to visualize the polygon.
           this.map.addLayer({
             'id': polygonLayerId,
             'type': 'fill',
-            'source': sourceId, // reference the data source
+            'source': sourceId,
             'layout': {},
             'paint': {
               'fill-color': `rgb(${[1, 2, 3].map(x => Math.random() * 256 | 0)})`,
               'fill-opacity': 0.5
             }
           });
-          // Add a black outline around the polygon.
           this.map.addLayer({
             'id': outlineLayerId,
             'type': 'line',
@@ -301,71 +316,96 @@ export class MapBoxComponent implements OnInit {
               'line-width': 10
             }
           });
-          this.map.jumpTo({
-            center: coordinates,
-            zoom: 15 // Set your desired zoom level
-          });
+          // this.map.jumpTo({
+          //   center: coordinates,
+          //   zoom: 15 // Set your desired zoom level
+          // });
+          this.fitMapToBounds();
         }
       });
-      
+  
       const popup: any = document.getElementById('popup');
       const cancelIcon: any = document.getElementById('cancel-icon');
-
+  
       this.map.on('click', (e: any) => {
         const features = this.map.queryRenderedFeatures(e.point);
         if (features.length) {
-          console.log(features)
           const feature = features[0];
           const dataRows = node.value.data.map((data: any) => `
-  <tr>
-    <th style="border: 1px solid #ddd; padding: 8px;">${data[0]}</th>
-    <td style="border: 1px solid #ddd; padding: 8px;">${data[1]}</td>
-  </tr>
-`).join('');
-
+            <tr>
+              <th style="border: 1px solid #ddd; padding: 8px;">${data[0]}</th>
+              <td style="border: 1px solid #ddd; padding: 8px;">${data[1]}</td>
+            </tr>
+          `).join('');
+  
           popup.innerHTML = `
-          <table style="border-collapse: collapse; border: 1px solid #ddd;">
-            <tr>
-              <th style="border: 1px solid #ddd; padding: 8px;">Id</th>
-              <td style="border: 1px solid #ddd; padding: 8px;">${feature.properties.id}</td>
-            </tr>
-            <tr>
-              <th style="border: 1px solid #ddd; padding: 8px;">Fill opacity</th>
-              <td style="border: 1px solid #ddd; padding: 8px;">${feature.properties['fill-opacity']}</td>
-            </tr>
-            <tr>
-              <th style="border: 1px solid #ddd; padding: 8px;">Stroke</th>
-              <td style="border: 1px solid #ddd; padding: 8px;">${feature.properties.stroke}</td>
-            </tr>
-            <tr>
-              <th style="border: 1px solid #ddd; padding: 8px;">Stroke opacity</th>
-              <td style="border: 1px solid #ddd; padding: 8px;">${feature.properties['stroke-opacity']}</td>
-            </tr>
-            ${dataRows}
-          </table>`;
-
+            <table style="border-collapse: collapse; border: 1px solid #ddd;">
+              <tr>
+                <th style="border: 1px solid #ddd; padding: 8px;">Id</th>
+                <td style="border: 1px solid #ddd; padding: 8px;">${feature.properties.id}</td>
+              </tr>
+              ${dataRows}
+            </table>`;  
+  
           popup.style.display = 'block';
-          // cancelIcon.style.display = 'inline-block'; // Show the cancel icon
         } else {
           popup.style.display = 'none';
-          cancelIcon.style.display = 'none'; // Hide the cancel icon
+          cancelIcon.style.display = 'none';
         }
       });
-
+  
       cancelIcon.addEventListener('click', () => {
         popup.style.display = 'none';
-        cancelIcon.style.display = 'none'; // Hide the cancel icon when clicked
+        cancelIcon.style.display = 'none';
       });
-
+  
     } else {
+      const sourceId = node.value.table_name + '-source';
+      const polygonLayerId = node.value.table_name + '-polygon-layer';
+      const outlineLayerId = node.value.table_name + '-outline-layer';
+      const pointLayerId = node.value.table_name + '-point-layer';
+      const lineLayerId = node.value.table_name + '-line-layer';
+  
       // Remove layers from the map if checkbox is unchecked
-      if (this.map.getLayer('maine')) {
-        this.map.removeLayer('maine');
+      if (this.map.getLayer(polygonLayerId)) {
+        this.map.removeLayer(polygonLayerId);
       }
-      if (this.map.getLayer('outline')) {
-        this.map.removeLayer('outline');
+      if (this.map.getLayer(outlineLayerId)) {
+        this.map.removeLayer(outlineLayerId);
       }
+      if (this.map.getLayer(pointLayerId)) {
+        this.map.removeLayer(pointLayerId);
+      }
+      if (this.map.getLayer(lineLayerId)) {
+        this.map.removeLayer(lineLayerId);
+      }
+      if (this.map.getSource(sourceId)) {
+        this.map.removeSource(sourceId);
+      }
+      this.fitMapToBounds();
     }
+  }
+
+  fitMapToBounds() {
+    const bounds = new mapboxgl.LngLatBounds();
+  
+    this.checklistSelection.selected.forEach((node:any) => {
+      const source:any = this.map.getSource(node.value.table_name + '-source') as mapboxgl.GeoJSONSource;
+      if (source) {
+        const data = source._data as GeoJSON.FeatureCollection<GeoJSON.Geometry>;
+        data.features.forEach((feature) => {
+          if (feature.geometry.type === "Point") {
+            bounds.extend(feature.geometry.coordinates as [number, number]);
+          } else if (feature.geometry.type === "LineString") {
+            feature.geometry.coordinates.forEach((coord) => bounds.extend(coord as [number, number]));
+          } else if (feature.geometry.type === "Polygon") {
+            feature.geometry.coordinates[0].forEach((coord) => bounds.extend(coord as [number, number]));
+          }
+        });
+      }
+    });
+  
+    this.map.fitBounds(bounds, { padding: 20 });
   }
 
   openPopup() {

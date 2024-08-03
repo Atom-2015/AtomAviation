@@ -3,7 +3,7 @@
         <a class="dilog"><img src="../../assets/logo.jpg" width="30%" alt=""></a>
         <ul class="navbarbutten">
             <li class="navbtn"><a [routerLink]="['/map-box']">Home</a></li>
-            <li class="navbtn" *ngIf='userType === "super_admin"'><a [routerLink]="['/user']">User</a></li>
+            <li class="navbtn" *ngIf='userType === "super_admin" || userType === "admin"'><a [routerLink]="['/user']">User</a></li>
             <li class="navbtn" (click)="logOut()" >Logout</li>
         </ul>
     </div>

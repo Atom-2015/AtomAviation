@@ -20,7 +20,7 @@ export class UserComponent implements OnInit{
 
   constructor(public dialog: MatDialog, public stateService: StateService,){}
   cities:any
-  displayedColumns = ['serialNo', 'name', 'email', 'cities','user_type', 'action'];
+  displayedColumns = ['serialNo', 'name', 'email', 'cities', 'action'];
   dataSource = new MatTableDataSource<any>
   checked = true
   users: any
@@ -65,18 +65,18 @@ export class UserComponent implements OnInit{
   }
   remove(row:any){}
 
-  enableAdmin(event:any,value:any){
-    console.log(event,this.checked)
-    console.log("value ================>>",value)
-    const user = this.users.find((resp:any)=> resp.id === value.id)
+  // enableAdmin(event:any,value:any){
+  //   console.log(event,this.checked)
+  //   console.log("value ================>>",value)
+  //   const user = this.users.find((resp:any)=> resp.id === value.id)
       
-    if(event.checked){
-     user.userType = "admin" 
-    } else {
-      user.userType = "user"
-    }
-    this.stateService.setAdminPermission(user.userType, user.email).subscribe()
-  }
+  //   if(event.checked){
+  //    user.userType = "admin" 
+  //   } else {
+  //     user.userType = "user"
+  //   }
+  //   this.stateService.setAdminPermission(user.userType, user.email).subscribe()
+  // }
 
   // @ViewChild(MatPaginator) paginator!: MatPaginator;
 
